@@ -7,7 +7,7 @@ namespace CatalogService.Core.Settings.DatabaseSettings
 {
     public class DatabaseSetting : IDatabaseSetting
     {
-        public string ConnextionString { get ; set; }
+        public string ConnectionString { get ; set; }
         public string DatabaseName { get; set ; }
         public string CollectionName { get; set ; }
     }

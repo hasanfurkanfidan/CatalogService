@@ -1,4 +1,6 @@
 using CatalogService.Core.Settings.DatabaseSettings;
+using CatologService.Core.DataAccess.Abstract;
+using CatologService.Core.DataAccess.Concrete;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -36,6 +38,8 @@ namespace CatalogService.Api
             });
             services.Configure<DatabaseSetting>(Configuration.GetSection(nameof(DatabaseSetting)));
             services.AddSingleton<IDatabaseSetting>(p => p.GetRequiredService<IOptions<DatabaseSetting>>().Value);
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddTransient<ICatalogContext, CatalogContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
