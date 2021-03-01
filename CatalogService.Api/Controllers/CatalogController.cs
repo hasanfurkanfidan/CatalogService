@@ -2,9 +2,11 @@
 using CatologService.Core.Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace CatalogService.Api.Controllers
@@ -14,9 +16,11 @@ namespace CatalogService.Api.Controllers
     public class CatalogController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
-        public CatalogController(IProductRepository productRepository)
+        private readonly ILogger<CatalogController> _logger;
+        public CatalogController(IProductRepository productRepository,ILogger<CatalogController>logger)
         {
             _productRepository = productRepository;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> GetProducts()
@@ -29,8 +33,10 @@ namespace CatalogService.Api.Controllers
         {
             if (String.IsNullOrEmpty(id))
             {
-                return BadRequest();
+                _logger.LogError($"Product with id:{id} not found!");
+                return NotFound();
             }
+            
             var data = await _productRepository.GetProductByIdAsync(id);
             return Ok(data);
         }
@@ -39,17 +45,22 @@ namespace CatalogService.Api.Controllers
         {
             if (String.IsNullOrEmpty(category))
             {
-                return BadRequest();
+                _logger.LogError($"Product with category:{category} not found!");
+                return NotFound();
             }
             var data = await _productRepository.GetProductsByCategoryAsync(category);
             return Ok(data);
         }
         [HttpGet("getbyname/{name}")]
+        [ProducesResponseType(typeof(List<Product>),(int)HttpStatusCode.OK)]
+
         public async Task<IActionResult>GetProductWithName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
-                return BadRequest();
+                _logger.LogError($"Product with name:{name} not found!");
+
+                return NotFound();
             }
             var data = await _productRepository.GetProductsByNameAsync(name);
             return Ok(data);
